@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           script: |
             echo $SHELL
-            echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            echo ${{ secrets.CR_PAT }} | /usr/local/bin/docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
