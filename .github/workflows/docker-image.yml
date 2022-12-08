@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  Playground:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run deploy scripts in server
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          password: ${{ secrets.SERVER_SSHKEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          script: |
+            echo $SHELL
+            echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
