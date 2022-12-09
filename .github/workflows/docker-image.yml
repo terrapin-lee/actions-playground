@@ -20,3 +20,46 @@ jobs:
           script: |
             echo $SHELL
             echo ${{ secrets.CR_PAT }} | /usr/local/bin/docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+      # Commit 등록 및 Build 시작 메시지 발송
+      - name: Send Commit Registration - Build Start Message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            📡 Update Code가 등록되었습니다. Build를 시작합니다.
+            ‣ 작업자: ${{github.actor}}
+            ‣ Update Code 주소: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            ‣ Update 변경 내역: ${{ github.event.commits[0].message }}
+      # Build 완료 및 Push 시작 메시지 발송
+      - name: Send Build End - Push Start Message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            📡 Update Code의 Build가 완료되었습니다. Push를 시작합니다.
+      # 작업 성공 메시지 발송
+      - name: Send Task Success Message
+        uses: appleboy/telegram-action@master
+        if: success()
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            📡 Update Code의 Push가 완료되었습니다. Service를 시작합니다.
+      # 작업 실패 메시지 발송
+      - name: Send Task Failure Message
+        uses: appleboy/telegram-action@master
+        if: failure()
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            📡 Update Code의 적용에 실패하였습니다. Log를 확인하십시오.
+            ‣ 작업자: ${{github.actor}}
+            ‣ Update Code 주소: https://github.com/${{ github.repository }}/commit/${{github.sha}}
