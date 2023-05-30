@@ -14,12 +14,17 @@ jobs:
       - name: Run deploy scripts in server
         uses: appleboy/ssh-action@v0.1.4
         with:
-          password: ${{ secrets.SERVER_SSHKEY }}
+          password: ${{ secrets.SERVER_PASSKEY }}
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_PORT }}
           script: |
             echo $SHELL
-            echo ${{ secrets.CR_PAT }} | /usr/local/bin/docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            echo ${{ secrets.CR_PAT }} | \
+              /usr/local/bin/docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            echo \
+              ${{vars.AEONG}} \
+              ${{vars.AEONG}}
       # Commit 등록 및 Build 시작 메시지 발송
       - name: Send Commit Registration - Build Start Message
         uses: appleboy/telegram-action@master
@@ -29,7 +34,7 @@ jobs:
           format: markdown
           message: |
             📡 Update Code가 등록되었습니다. Build를 시작합니다.
-            ‣ 작업자: ${{github.actor}}
+            ‣ 작업자: ${{github.actor}} ${{github.actor}}
             ‣ Update Code 주소: https://github.com/${{ github.repository }}/commit/${{github.sha}}
             ‣ Update 변경 내역: ${{ github.event.commits[0].message }}
       # Build 완료 및 Push 시작 메시지 발송
